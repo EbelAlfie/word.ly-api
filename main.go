@@ -1,17 +1,17 @@
-package wordly
+package main
 
 import (
 	"github.com/gin-gonic/gin"
 
-	"wordly/user"
+	"wordly/route/user"
 )
 
 func main() {
 	server := gin.Default()
 
-	server.Group("/wordly")
+	wordly := server.Group("/wordly")
 	{
-		server.Group("/user", user.UserRoute)
+		server.Group("/user", user.UserRoute(wordly))
 	}
 
 	server.Run("6969")

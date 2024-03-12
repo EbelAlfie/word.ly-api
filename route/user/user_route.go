@@ -5,5 +5,7 @@ import (
 )
 
 func UserRoute(group *gin.RouterGroup) gin.HandlerFunc {
-	group.POST("/login")
+	return gin.HandlerFunc(func(ctx *gin.Context) {
+		group.POST("/login")
+	})
 }
