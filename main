@@ -1,0 +1,14 @@
+package wordly
+
+import (
+	"github.com/gin-gonic/gin",
+	"wordly/user/route"
+)
+
+func main() {
+	router := gin.Default() ;
+
+	router.Route("user") ;
+
+	router.Run() ;
+}
