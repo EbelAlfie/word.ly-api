@@ -1,4 +1,4 @@
-module wordly
+module wordly/api
 
 go 1.21.6
 

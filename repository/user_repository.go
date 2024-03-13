@@ -1,6 +1,9 @@
 package repository
 
-type UserRepository interface {
-	Register()
-	Login()
+type UserRepositoryImpl struct {
+	//db apalah
+}
+
+func (repo *UserRepositoryImpl) Login() {
+
 }

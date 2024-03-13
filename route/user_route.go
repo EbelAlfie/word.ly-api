@@ -3,7 +3,7 @@ package user
 import (
 	"github.com/gin-gonic/gin"
 
-	"wordly/controller"
+	"wordly/api/controller"
 )
 
 func UserRoute(group *gin.RouterGroup) gin.HandlerFunc {

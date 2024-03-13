@@ -1,4 +1,4 @@
-package user
+package domain
 
 type AuthModel struct {
 	username string `json:"username"`
