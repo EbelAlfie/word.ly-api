@@ -1,11 +1,15 @@
 package domain
 
+import (
+	"github.com/gin-gonic/gin"
+)
+
 type UserRepository interface {
 	Register()
 	Login()
 }
 
 type UserController interface {
-	Register()
-	Login()
+	Register(c *gin.Context)
+	Login(c *gin.Context)
 }
