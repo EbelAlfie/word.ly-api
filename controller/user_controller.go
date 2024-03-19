@@ -4,7 +4,6 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/twitchyliquid64/golang-asm/obj"
 
 	domain "wordly/api/domain"
 )
@@ -13,8 +12,10 @@ type UserControllerImpl struct {
 	repo domain.UserRepository
 }
 
-func CreateUserController() domain.UserController {
-	return &UserControllerImpl{}
+func CreateUserController(repo domain.UserRepositoryImpl) domain.UserController {
+	return &UserControllerImpl{
+		repo
+	}
 }
 
 func (cont *UserControllerImpl) Register(c *gin.Context) {
@@ -25,6 +26,14 @@ func (cont *UserControllerImpl) Register(c *gin.Context) {
 		return
 	}
 
+	userRepository := domain.CreateUserRepo() 
+
+	if err:= userRepository.Register() != nil {
+		c.JSON(http.StatusBadRequest, {Message: err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOk, {Message: "Success"})
 }
 
 func (cont *UserControllerImpl) Login(c *gin.Context) {
@@ -35,4 +44,11 @@ func (cont *UserControllerImpl) Login(c *gin.Context) {
 		return
 	}
 
+	userRepository := domain.CreateUserRepo() 
+	if err := userRepository.Login() != nil {
+		c.JSON(http.StatusNotFound, {Message: err.Error()})
+		return
+	}
+	
+	c.JSON(http.StatusOK, {Token: "erewfwffwerweddwefewr"})
 }
