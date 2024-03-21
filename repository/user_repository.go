@@ -12,10 +12,10 @@ func CreateUserRepo() domain.UserRepository {
 	return &UserRepositoryImpl{}
 }
 
-func (repo *UserRepositoryImpl) Register() {
-
+func (repo *UserRepositoryImpl) Register(request domain.RegisterRequest) {
+	//name not taken return ok
 }
 
-func (repo *UserRepositoryImpl) Login() {
-
+func (repo *UserRepositoryImpl) Login(request domain.LoginRequest) {
+	//name yes return ok
 }

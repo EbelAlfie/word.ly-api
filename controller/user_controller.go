@@ -28,7 +28,7 @@ func (cont *UserControllerImpl) Register(c *gin.Context) {
 
 	userRepository := domain.CreateUserRepo() 
 
-	if err:= userRepository.Register() != nil {
+	if err:= userRepository.Register(requestBody) != nil {
 		c.JSON(http.StatusBadRequest, {Message: err.Error()})
 		return
 	}
@@ -45,7 +45,7 @@ func (cont *UserControllerImpl) Login(c *gin.Context) {
 	}
 
 	userRepository := domain.CreateUserRepo() 
-	if err := userRepository.Login() != nil {
+	if err := userRepository.Login(requestBody) != nil {
 		c.JSON(http.StatusNotFound, {Message: err.Error()})
 		return
 	}
