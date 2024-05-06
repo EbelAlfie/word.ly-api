@@ -9,11 +9,13 @@ import (
 func main() {
 	server := gin.Default()
 
+	gin.SetMode(gin.DebugMode)
+
 	wordly := server.Group("/wordly")
 	{
 		server.Group("/user", route.UserRoute(wordly))
 		server.Group("/quiz", route.QuizRoute(wordly))
 	}
 
-	server.Run("6969")
+	server.Run(":8080")
 }

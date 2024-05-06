@@ -2,9 +2,13 @@ package repository
 
 import (
 	"database/sql"
+	"fmt"
+	"log"
+	"os"
 	"wordly/api/domain"
 
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/joho/godotenv"
 )
 
 type UserRepositoryImpl struct {
@@ -46,7 +50,16 @@ func (repo *UserRepositoryImpl) Login() (*domain.UserData, error) {
 }
 
 func openSqlCon() *sql.DB {
-	db, err := sql.Open("mysql", "username:password@tcp(127.0.0.1:3306)/test")
+	errorEnv := godotenv.Load()
+	if errorEnv != nil {
+		log.Fatal("Error loading .env file")
+	}
+
+	user := os.Getenv("USER")
+	pass := os.Getenv("PASS")
+	port := os.Getenv("PORT")
+	dataSourceName := fmt.Sprintf("%s:%s@tcp(127.0.0.1:%s)/user_data", user, pass, port)
+	db, err := sql.Open("mysql", dataSourceName)
 
 	if err != nil {
 		panic(err.Error())
