@@ -4,14 +4,14 @@ import (
 	domain "wordly/api/domain"
 )
 
-type QuizRepositoryImpl struct (
+type QuizRepositoryImpl struct {
 	//my sql
-)
+}
 
 func CreateQuizRepository() domain.QuizRepository {
 	return &QuizRepositoryImpl{}
 }
 
-func (repo *domain.QuizRepository) GetQuizes() {
+func (repo *QuizRepositoryImpl) GetQuizes() {
 
 }

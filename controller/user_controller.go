@@ -9,12 +9,12 @@ import (
 )
 
 type UserControllerImpl struct {
-	repo domain.UserRepository
+	repository domain.UserRepository
 }
 
-func CreateUserController(repo domain.UserRepositoryImpl) domain.UserController {
+func CreateUserController(repo domain.UserRepository) domain.UserController {
 	return &UserControllerImpl{
-		repo
+		repository: repo,
 	}
 }
 
@@ -22,33 +22,39 @@ func (cont *UserControllerImpl) Register(c *gin.Context) {
 	var requestBody domain.RegisterRequest
 	err := c.ShouldBind(&requestBody)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, {Message: err.Error()})
+		c.JSON(http.StatusBadRequest, domain.ErrorResponse{Message: err.Error()})
 		return
 	}
 
-	userRepository := domain.CreateUserRepo() 
+	userRepository := cont.repository
 
-	if err:= userRepository.Register() != nil {
-		c.JSON(http.StatusBadRequest, {Message: err.Error()})
+	errorRepo := userRepository.Register(requestBody)
+	if errorRepo != nil {
+		c.JSON(http.StatusBadRequest, domain.ErrorResponse{Message: err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOk, {Message: "Success"})
+	c.JSON(http.StatusOK, domain.SuccessResponse{Message: "Success"})
 }
 
 func (cont *UserControllerImpl) Login(c *gin.Context) {
 	var requestBody domain.LoginRequest
 	err := c.ShouldBind(&requestBody)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, {Message: err.Error()})
+		c.JSON(http.StatusBadRequest, domain.ErrorResponse{Message: err.Error()})
 		return
 	}
 
-	userRepository := domain.CreateUserRepo() 
-	if err := userRepository.Login() != nil {
-		c.JSON(http.StatusNotFound, {Message: err.Error()})
+	userRepository := cont.repository
+	userData, err := userRepository.Login()
+	if err != nil {
+		c.JSON(http.StatusNotFound, domain.ErrorResponse{Message: err.Error()})
 		return
 	}
-	
-	c.JSON(http.StatusOK, {Token: "erewfwffwerweddwefewr"})
+
+	if userData == nil {
+		c.JSON(http.StatusNotFound, domain.ErrorResponse{Message: "You must be registered"})
+	} else {
+		c.JSON(http.StatusOK, domain.SuccessResponse{Message: "token"})
+	}
 }

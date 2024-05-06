@@ -1,12 +1,12 @@
 package domain
 
-type QuizModel struct (
-	soal string `json:"soal"`
-	nilai string `json:"nilai"`
+type QuizModel struct {
+	soal    string `json:"soal"`
+	nilai   string `json:"nilai"`
 	jawaban string `json:"jawaban"`
-)
+}
 
-type PilihanGanda struct (
+type PilihanGanda struct {
 	jawaban string `json:"jawaban"`
-	skor bool `json:"skor"`
-)
+	skor    bool   `json:"skor"`
+}

@@ -3,19 +3,18 @@ package controller
 import (
 	"github.com/gin-gonic/gin"
 
-	repository "wordly/api/repository"
+	domain "wordly/api/domain"
 )
 
 type QuizControllerImpl struct {
-	repo domain.QuizRepository
+	repository domain.QuizRepository
 }
 
 func CreateQuizController(repo domain.QuizRepository) domain.QuizController {
-	return &QuizControllerImpl {
-		repo
+	return &QuizControllerImpl{
+		repository: repo,
 	}
 }
 
-func (cont *domain.QuizController) GetQuizes(context *gin.Context) {
-	repo := repository.CreateQuizRepository() 
+func (cont *QuizControllerImpl) GetQuizes(context *gin.Context) {
 }

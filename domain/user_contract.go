@@ -5,8 +5,8 @@ import (
 )
 
 type UserRepository interface {
-	Register()
-	Login()
+	Register(RegisterRequest) error
+	Login() (*UserData, error)
 }
 
 type UserController interface {

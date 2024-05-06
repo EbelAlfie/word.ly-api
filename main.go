@@ -3,7 +3,7 @@ package main
 import (
 	"github.com/gin-gonic/gin"
 
-	user "wordly/api/route"
+	route "wordly/api/route"
 )
 
 func main() {
@@ -11,7 +11,8 @@ func main() {
 
 	wordly := server.Group("/wordly")
 	{
-		server.Group("/user", user.UserRoute(wordly))
+		server.Group("/user", route.UserRoute(wordly))
+		server.Group("/quiz", route.QuizRoute(wordly))
 	}
 
 	server.Run("6969")
