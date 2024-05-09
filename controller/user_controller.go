@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -42,6 +43,7 @@ func (cont *UserControllerImpl) Login(c *gin.Context) {
 	err := c.ShouldBind(&requestBody)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, domain.ErrorResponse{Message: err.Error()})
+		fmt.Print("HELLO")
 		return
 	}
 

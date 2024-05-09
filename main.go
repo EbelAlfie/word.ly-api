@@ -13,9 +13,9 @@ func main() {
 
 	wordly := server.Group("/wordly")
 	{
-		server.Group("/user", route.UserRoute(wordly))
-		server.Group("/quiz", route.QuizRoute(wordly))
+		wordly.Group("/user", route.UserRoute(wordly))
+		wordly.Group("/quiz", route.QuizRoute(wordly))
 	}
 
-	server.Run(":8080")
+	server.Run(":3030")
 }
