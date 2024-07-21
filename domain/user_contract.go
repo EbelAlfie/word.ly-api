@@ -5,7 +5,7 @@ import (
 )
 
 type UserRepository interface {
-	Register(RegisterRequest) error
+	Register(RegisterRequest) (*AuthResponse, error)
 	Login() (*UserData, error)
 }
 

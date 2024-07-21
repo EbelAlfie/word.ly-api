@@ -23,18 +23,19 @@ func CreateUserRepo() domain.UserRepository {
 	}
 }
 
-func (repo *UserRepositoryImpl) Register(request domain.RegisterRequest) error {
-	// perform a db.Query insert
+func (repo *UserRepositoryImpl) Register(request domain.RegisterRequest) (*domain.AuthResponse, error) {
 	db := repo.mysql
 	insert, err := db.Query("INSERT INTO test VALUES ( 2, 'TEST' )")
 
-	// if there is an error inserting, handle it
 	if err != nil {
-		return err
+		return nil, err
 	}
 	// be careful deferring Queries if you are using transactions
 	defer insert.Close()
-	return nil
+	//create jwt token
+	return &domain.AuthResponse{
+		AuthToken: "",
+	}, nil
 }
 
 func (repo *UserRepositoryImpl) Login() (*domain.UserData, error) {
