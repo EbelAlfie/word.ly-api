@@ -5,9 +5,9 @@ import (
 )
 
 type QuizRepository interface {
-	GetQuizes(quizType string) (*QuizModel, error)
+	GetCerpen(quizType string) (*QuizModel, error)
 }
 
 type QuizController interface {
-	GetQuizes(context *gin.Context)
+	GetCerpen(context *gin.Context)
 }

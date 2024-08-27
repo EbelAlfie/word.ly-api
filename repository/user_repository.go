@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	"wordly/api/domain"
+	"wordly/api/middleware"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/joho/godotenv"
@@ -24,17 +25,38 @@ func CreateUserRepo() domain.UserRepository {
 }
 
 func (repo *UserRepositoryImpl) Register(request domain.RegisterRequest) (*domain.AuthResponse, error) {
+
+	errorEnv := godotenv.Load()
+	if errorEnv != nil {
+		return nil, fmt.Errorf("error loading .env file")
+	}
+
+	secret := os.Getenv("SECRET")
+	if secret == "" {
+		return nil, fmt.Errorf("error loading .env file")
+	}
+
 	db := repo.mysql
-	insert, err := db.Query("INSERT INTO test VALUES ( 2, 'TEST' )")
+	rows, err := db.Query(
+		"INSERT INTO user_data (email, username, password) VALUES (?, ?, ?)",
+		request.Email, request.Username, request.Password,
+	)
 
 	if err != nil {
 		return nil, err
 	}
+
 	// be careful deferring Queries if you are using transactions
-	defer insert.Close()
+	defer rows.Close()
 	//create jwt token
+	accessToken, atErr := middleware.CreateAccessToken(&domain.UserData{}, secret, 2)
+
+	if atErr != nil {
+		return nil, fmt.Errorf(atErr.Error())
+	}
+
 	return &domain.AuthResponse{
-		AuthToken: "",
+		AuthToken: accessToken,
 	}, nil
 }
 
@@ -59,7 +81,7 @@ func openSqlCon() *sql.DB {
 	user := os.Getenv("USER")
 	pass := os.Getenv("PASS")
 	port := os.Getenv("PORT")
-	dataSourceName := fmt.Sprintf("%s:%s@tcp(127.0.0.1:%s)/user_data", user, pass, port)
+	dataSourceName := fmt.Sprintf("%s:%s@tcp(127.0.0.1:%s)/wordlydb", user, pass, port)
 	db, err := sql.Open("mysql", dataSourceName)
 
 	if err != nil {

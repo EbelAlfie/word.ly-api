@@ -7,10 +7,9 @@ import (
 	repository "wordly/api/repository"
 )
 
-func QuizRoute(group *gin.RouterGroup) gin.HandlerFunc {
+func QuizRoute(group *gin.RouterGroup) {
 	quizRepository := repository.CreateQuizRepository()
 	quizController := controller.CreateQuizController(quizRepository)
-	return gin.HandlerFunc(func(ctx *gin.Context) {
-		group.POST("/all-quiz", quizController.GetQuizes)
-	})
+
+	group.GET("/cerpen", quizController.GetCerpen)
 }

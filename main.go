@@ -25,10 +25,17 @@ func main() {
 
 	wordly := server.Group("/wordly")
 	{
-		wordly.Group("/user", route.UserRoute(wordly))
-		wordly.Use(middleware.JwtAuthMiddleware(secret))
-		wordly.Group("/quiz", route.QuizRoute(wordly))
+		public := wordly.Group("")
+
+		route.UserRoute(public.Group("/user"))
+
+		private := wordly.Group("")
+		private.Use(middleware.JwtAuthMiddleware(secret))
+
+		route.QuizRoute(private.Group("/quiz"))
 	}
 
-	server.Run(":3030")
+	if err := server.Run("localhost:3030"); err != nil {
+		log.Fatal("Failed to start server: ", err)
+	}
 }

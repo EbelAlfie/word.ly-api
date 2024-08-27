@@ -7,11 +7,10 @@ import (
 	repository "wordly/api/repository"
 )
 
-func UserRoute(group *gin.RouterGroup) gin.HandlerFunc {
+func UserRoute(group *gin.RouterGroup) {
 	userRepo := repository.CreateUserRepo()
 	userController := controller.CreateUserController(userRepo)
-	return gin.HandlerFunc(func(ctx *gin.Context) {
-		group.POST("/login", userController.Login)
-		group.POST("/register", userController.Register)
-	})
+
+	group.POST("/login", userController.Login)
+	group.POST("/register", userController.Register)
 }

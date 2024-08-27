@@ -18,7 +18,7 @@ func CreateQuizRepository() domain.QuizRepository {
 	}
 }
 
-func (repo *QuizRepositoryImpl) GetQuizes(quizType string) (*domain.QuizModel, error) {
+func (repo *QuizRepositoryImpl) GetCerpen(quizType string) (*domain.QuizModel, error) {
 	database := repo.db
 	_, err := database.Query("SELECT * FROM test WHERE type is quizType")
 

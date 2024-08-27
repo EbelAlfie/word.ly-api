@@ -1,14 +1,14 @@
 package domain
 
 type LoginRequest struct {
-	username string `json:"username"`
-	password string `json:"password"`
+	Username string
+	Password string
 }
 
 type RegisterRequest struct {
-	email    string `json:"email"`
-	username string `json:"username"`
-	password string `json:"password"`
+	Email    string
+	Username string
+	Password string
 }
 
 type AuthResponse struct {
@@ -19,5 +19,8 @@ type UserData struct {
 	Uid      string `json:"userId"`
 	Email    string `json:"email"`
 	UserName string `json:"username"`
-	password string `json:"password"`
+}
+
+func (data *UserData) ValidateField() bool {
+
 }

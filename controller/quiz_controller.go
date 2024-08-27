@@ -16,5 +16,6 @@ func CreateQuizController(repo domain.QuizRepository) domain.QuizController {
 	}
 }
 
-func (cont *QuizControllerImpl) GetQuizes(context *gin.Context) {
+func (cont *QuizControllerImpl) GetCerpen(context *gin.Context) {
+
 }

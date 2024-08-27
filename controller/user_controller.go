@@ -27,15 +27,30 @@ func (cont *UserControllerImpl) Register(c *gin.Context) {
 		return
 	}
 
-	userRepository := cont.repository
-
-	_, errorRepo := userRepository.Register(requestBody)
-	if errorRepo != nil {
+	if requestBody.Email == "" {
 		c.JSON(http.StatusBadRequest, domain.ErrorResponse{Message: err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, domain.SuccessResponse{Message: "Success"})
+	if requestBody.Username == "" {
+		c.JSON(http.StatusBadRequest, domain.ErrorResponse{Message: err.Error()})
+		return
+	}
+
+	if requestBody.Password == "" {
+		c.JSON(http.StatusBadRequest, domain.ErrorResponse{Message: err.Error()})
+		return
+	}
+
+	userRepository := cont.repository
+
+	authResponse, errorRepo := userRepository.Register(requestBody)
+	if errorRepo != nil {
+		c.JSON(http.StatusBadGateway, domain.ErrorResponse{Message: errorRepo.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, *authResponse)
 }
 
 func (cont *UserControllerImpl) Login(c *gin.Context) {
