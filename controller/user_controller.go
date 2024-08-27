@@ -27,18 +27,10 @@ func (cont *UserControllerImpl) Register(c *gin.Context) {
 		return
 	}
 
-	if requestBody.Email == "" {
-		c.JSON(http.StatusBadRequest, domain.ErrorResponse{Message: err.Error()})
-		return
-	}
+	fieldErr := validateRegistration(requestBody)
 
-	if requestBody.Username == "" {
-		c.JSON(http.StatusBadRequest, domain.ErrorResponse{Message: err.Error()})
-		return
-	}
-
-	if requestBody.Password == "" {
-		c.JSON(http.StatusBadRequest, domain.ErrorResponse{Message: err.Error()})
+	if fieldErr != nil {
+		c.JSON(http.StatusBadRequest, domain.ErrorResponse{Message: fieldErr.Error()})
 		return
 	}
 
@@ -55,23 +47,51 @@ func (cont *UserControllerImpl) Register(c *gin.Context) {
 
 func (cont *UserControllerImpl) Login(c *gin.Context) {
 	var requestBody domain.LoginRequest
-	err := c.ShouldBind(&requestBody)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, domain.ErrorResponse{Message: err.Error()})
-		fmt.Print("HELLO")
+	contentErr := c.ShouldBind(&requestBody)
+	if contentErr != nil {
+		c.JSON(http.StatusBadRequest, domain.ErrorResponse{Message: contentErr.Error()})
+		return
+	}
+
+	fieldErr := validateLoginReq(requestBody)
+
+	if fieldErr != nil {
+		c.JSON(http.StatusBadRequest, domain.ErrorResponse{Message: fieldErr.Error()})
 		return
 	}
 
 	userRepository := cont.repository
-	userData, err := userRepository.Login()
+	userToken, err := userRepository.Login()
 	if err != nil {
 		c.JSON(http.StatusNotFound, domain.ErrorResponse{Message: err.Error()})
 		return
 	}
 
-	if userData == nil {
-		c.JSON(http.StatusNotFound, domain.ErrorResponse{Message: "You must be registered"})
-	} else {
-		c.JSON(http.StatusOK, domain.SuccessResponse{Message: "token"})
+	c.JSON(http.StatusOK, userToken)
+}
+
+func validateRegistration(request domain.RegisterRequest) error {
+	if request.Email == "" {
+		return fmt.Errorf("Email must not be empty")
 	}
+
+	if request.Username == "" {
+		return fmt.Errorf("Username must not be empty")
+	}
+
+	if request.Password == "" {
+		return fmt.Errorf("Password is required")
+	}
+	return nil
+}
+
+func validateLoginReq(request domain.LoginRequest) error {
+	if request.Username == "" {
+		return fmt.Errorf("Username is empty")
+	}
+
+	if request.Password == "" {
+		return fmt.Errorf("Password is required")
+	}
+	return nil
 }

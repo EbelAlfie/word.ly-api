@@ -19,8 +19,5 @@ type UserData struct {
 	Uid      string `json:"userId"`
 	Email    string `json:"email"`
 	UserName string `json:"username"`
-}
-
-func (data *UserData) ValidateField() bool {
-
+	Password string `json:"password"`
 }

@@ -60,7 +60,18 @@ func (repo *UserRepositoryImpl) Register(request domain.RegisterRequest) (*domai
 	}, nil
 }
 
-func (repo *UserRepositoryImpl) Login() (*domain.UserData, error) {
+func (repo *UserRepositoryImpl) Login() (*domain.AuthResponse, error) {
+	err := godotenv.Load()
+
+	if err != nil {
+		return nil, err
+	}
+
+	secret := os.Getenv("SECRET")
+	if secret == "" {
+		return nil, err
+	}
+
 	db := repo.mysql
 	query, err := db.Query("SELECT * FROM test WHERE")
 
@@ -68,8 +79,20 @@ func (repo *UserRepositoryImpl) Login() (*domain.UserData, error) {
 		return nil, err
 	}
 
+	var userData domain.UserData
+	query.Scan(&userData)
+
 	defer query.Close()
-	return &domain.UserData{}, nil
+
+	accessToken, authErr := middleware.CreateAccessToken(&userData, secret, 2)
+
+	if authErr != nil {
+		return nil, authErr
+	}
+
+	return &domain.AuthResponse{
+		AuthToken: accessToken,
+	}, nil
 }
 
 func openSqlCon() *sql.DB {
