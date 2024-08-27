@@ -16,8 +16,8 @@ type AuthResponse struct {
 }
 
 type UserData struct {
-	uid      string `json:"userId"`
-	email    string `json:"email"`
-	username string `json:"username"`
+	Uid      string `json:"userId"`
+	Email    string `json:"email"`
+	UserName string `json:"username"`
 	password string `json:"password"`
 }

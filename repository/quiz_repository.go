@@ -18,6 +18,13 @@ func CreateQuizRepository() domain.QuizRepository {
 	}
 }
 
-func (repo *QuizRepositoryImpl) GetQuizes() {
+func (repo *QuizRepositoryImpl) GetQuizes(quizType string) () {
+	database := repo.db
+	query, err := database.Query("SELECT * FROM test WHERE type is quizType")
 
+	if err != nil {
+		return nil, err
+	}
+
+	
 }

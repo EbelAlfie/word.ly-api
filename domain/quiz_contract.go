@@ -5,7 +5,7 @@ import (
 )
 
 type QuizRepository interface {
-	GetQuizes()
+	GetQuizes(quizType string)
 }
 
 type QuizController interface {

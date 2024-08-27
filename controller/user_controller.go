@@ -29,7 +29,7 @@ func (cont *UserControllerImpl) Register(c *gin.Context) {
 
 	userRepository := cont.repository
 
-	errorRepo := userRepository.Register(requestBody)
+	_, errorRepo := userRepository.Register(requestBody)
 	if errorRepo != nil {
 		c.JSON(http.StatusBadRequest, domain.ErrorResponse{Message: err.Error()})
 		return
