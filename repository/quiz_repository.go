@@ -18,7 +18,7 @@ func CreateQuizRepository() domain.QuizRepository {
 	}
 }
 
-func (repo *QuizRepositoryImpl) GetCerpen(quizType string) (*domain.QuizModel, error) {
+func (repo *QuizRepositoryImpl) GetCerpen() (*domain.QuizModel, error) {
 	database := repo.db
 	_, err := database.Query("SELECT * FROM test WHERE type is quizType")
 
@@ -27,4 +27,14 @@ func (repo *QuizRepositoryImpl) GetCerpen(quizType string) (*domain.QuizModel, e
 	}
 
 	return &domain.QuizModel{}, nil
+}
+
+func (repo *QuizRepositoryImpl) GetKalimatEfektif() (*domain.QuizModel, error) {
+	database := repo.db
+	_, err := db.Query("SELECT * FROM quiz_table")
+
+	if err != nil {
+		return nil, err
+	}
+
 }

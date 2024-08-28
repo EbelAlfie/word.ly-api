@@ -19,3 +19,7 @@ func CreateQuizController(repo domain.QuizRepository) domain.QuizController {
 func (cont *QuizControllerImpl) GetCerpen(context *gin.Context) {
 
 }
+
+func (cont *QuizControllerImpl) GetKalimatEfektif(context *gin.Context) {
+
+}

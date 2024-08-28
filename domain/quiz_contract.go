@@ -5,9 +5,11 @@ import (
 )
 
 type QuizRepository interface {
-	GetCerpen(quizType string) (*QuizModel, error)
+	GetCerpen() (*QuizModel, error)
+	GetKalimatEfektif() (*QuizModel, error)
 }
 
 type QuizController interface {
 	GetCerpen(context *gin.Context)
+	GetKalimatEfektif(context *gin.Context)
 }
