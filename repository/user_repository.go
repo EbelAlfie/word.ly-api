@@ -73,7 +73,7 @@ func (repo *UserRepositoryImpl) Login() (*domain.AuthResponse, error) {
 	}
 
 	db := repo.mysql
-	query, err := db.Query("SELECT * FROM test WHERE")
+	query, err := db.Query("SELECT * FROM user_data WHERE")
 
 	if err != nil {
 		return nil, err
