@@ -70,6 +70,10 @@ func (cont *UserControllerImpl) Login(c *gin.Context) {
 	c.JSON(http.StatusOK, userToken)
 }
 
+func (cont *UserControllerImpl) GetProfile(c *gin.Context) {
+
+}
+
 func validateRegistration(request domain.RegisterRequest) error {
 	if request.Email == "" {
 		return fmt.Errorf("Email must not be empty")

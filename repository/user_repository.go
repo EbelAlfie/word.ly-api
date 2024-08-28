@@ -93,3 +93,7 @@ func (repo *UserRepositoryImpl) Login() (*domain.AuthResponse, error) {
 		AuthToken: accessToken,
 	}, nil
 }
+
+func (repo *UserRepositoryImpl) GetProfile() {
+
+}

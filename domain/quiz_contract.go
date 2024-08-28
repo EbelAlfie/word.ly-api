@@ -7,9 +7,11 @@ import (
 type QuizRepository interface {
 	GetCerpen() (*QuizModel, error)
 	GetKalimatEfektif() (*QuizModel, error)
+	UpdateSoal() error
 }
 
 type QuizController interface {
 	GetCerpen(context *gin.Context)
 	GetKalimatEfektif(context *gin.Context)
+	UpdateSoal(context *gin.Context)
 }

@@ -39,3 +39,13 @@ func (repo *QuizRepositoryImpl) GetKalimatEfektif() (*domain.QuizModel, error) {
 
 	return &domain.QuizModel{}, nil
 }
+
+func (repo *QuizRepositoryImpl) UpdateSoal() error {
+	database := repo.db
+	_, err := database.Query("UPDATE")
+
+	if err != nil {
+		return err
+	}
+	return nil
+}
