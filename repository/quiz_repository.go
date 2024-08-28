@@ -37,4 +37,5 @@ func (repo *QuizRepositoryImpl) GetKalimatEfektif() (*domain.QuizModel, error) {
 		return nil, err
 	}
 
+	return &domain.QuizModel{}, nil
 }
