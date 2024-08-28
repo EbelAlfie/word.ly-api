@@ -3,7 +3,6 @@ package repository
 import (
 	"database/sql"
 	"fmt"
-	"log"
 	"os"
 	"wordly/api/domain"
 	"wordly/api/middleware"
@@ -93,23 +92,4 @@ func (repo *UserRepositoryImpl) Login() (*domain.AuthResponse, error) {
 	return &domain.AuthResponse{
 		AuthToken: accessToken,
 	}, nil
-}
-
-func openSqlCon() *sql.DB {
-	errorEnv := godotenv.Load()
-	if errorEnv != nil {
-		log.Fatal("Error loading .env file")
-	}
-
-	user := os.Getenv("USER")
-	pass := os.Getenv("PASS")
-	port := os.Getenv("PORT")
-	dataSourceName := fmt.Sprintf("%s:%s@tcp(127.0.0.1:%s)/wordlydb", user, pass, port)
-	db, err := sql.Open("mysql", dataSourceName)
-
-	if err != nil {
-		panic(err.Error())
-	}
-
-	return db
 }

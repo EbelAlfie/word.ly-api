@@ -31,7 +31,7 @@ func (repo *QuizRepositoryImpl) GetCerpen() (*domain.QuizModel, error) {
 
 func (repo *QuizRepositoryImpl) GetKalimatEfektif() (*domain.QuizModel, error) {
 	database := repo.db
-	_, err := db.Query("SELECT * FROM quiz_table")
+	_, err := database.Query("SELECT * FROM quiz_table")
 
 	if err != nil {
 		return nil, err
