@@ -61,7 +61,7 @@ func (cont *UserControllerImpl) Login(c *gin.Context) {
 	}
 
 	userRepository := cont.repository
-	userToken, err := userRepository.Login()
+	userToken, err := userRepository.Login(requestBody)
 	if err != nil {
 		c.JSON(http.StatusNotFound, domain.ErrorResponse{Message: err.Error()})
 		return

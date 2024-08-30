@@ -23,3 +23,7 @@ func (cont *QuizControllerImpl) GetCerpen(context *gin.Context) {
 func (cont *QuizControllerImpl) GetKalimatEfektif(context *gin.Context) {
 
 }
+
+func (cont *QuizControllerImpl) UpdateSoal(context *gin.Context) {
+	
+}

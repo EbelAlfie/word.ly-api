@@ -23,6 +23,8 @@ func main() {
 
 	gin.SetMode(gin.DebugMode)
 
+	server.Use(middleware.CORSMiddleware())
+
 	wordly := server.Group("/wordly")
 	{
 		public := wordly.Group("")

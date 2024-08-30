@@ -59,7 +59,7 @@ func (repo *UserRepositoryImpl) Register(request domain.RegisterRequest) (*domai
 	}, nil
 }
 
-func (repo *UserRepositoryImpl) Login() (*domain.AuthResponse, error) {
+func (repo *UserRepositoryImpl) Login(request domain.LoginRequest) (*domain.AuthResponse, error) {
 	err := godotenv.Load()
 
 	if err != nil {
@@ -72,7 +72,7 @@ func (repo *UserRepositoryImpl) Login() (*domain.AuthResponse, error) {
 	}
 
 	db := repo.mysql
-	query, err := db.Query("SELECT * FROM user_data WHERE")
+	query, err := db.Query("SELECT * FROM user_data WHERE email = ? AND password = ?", request.Username, request.Password)
 
 	if err != nil {
 		return nil, err

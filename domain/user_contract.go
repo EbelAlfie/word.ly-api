@@ -6,7 +6,7 @@ import (
 
 type UserRepository interface {
 	Register(RegisterRequest) (*AuthResponse, error)
-	Login() (*AuthResponse, error)
+	Login(LoginRequest) (*AuthResponse, error)
 }
 
 type UserController interface {
