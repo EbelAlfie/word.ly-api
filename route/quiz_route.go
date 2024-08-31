@@ -11,5 +11,5 @@ func QuizRoute(group *gin.RouterGroup) {
 	quizRepository := repository.CreateQuizRepository()
 	quizController := controller.CreateQuizController(quizRepository)
 
-	group.GET("/cerpen", quizController.GetCerpen)
+	group.GET("/quizes", quizController.GetQuiz)
 }

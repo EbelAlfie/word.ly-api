@@ -18,9 +18,9 @@ func CreateQuizRepository() domain.QuizRepository {
 	}
 }
 
-func (repo *QuizRepositoryImpl) GetCerpen() (*domain.QuizModel, error) {
+func (repo *QuizRepositoryImpl) GetQuiz(quizType domain.QuizType) (*domain.QuizModel, error) {
 	database := repo.db
-	_, err := database.Query("SELECT * FROM test WHERE type is quizType")
+	_, err := database.Query("SELECT * FROM quiz_table WHERE type is quizType")
 
 	if err != nil {
 		return nil, err
@@ -29,13 +29,24 @@ func (repo *QuizRepositoryImpl) GetCerpen() (*domain.QuizModel, error) {
 	return &domain.QuizModel{}, nil
 }
 
-func (repo *QuizRepositoryImpl) GetKalimatEfektif() (*domain.QuizModel, error) {
+func (repo *QuizRepositoryImpl) UpdateQuiz() (*domain.QuizModel, error) {
 	database := repo.db
-	_, err := database.Query("SELECT * FROM quiz_table")
+	_, err := database.Query("UPDATE * FROM quiz_table")
 
 	if err != nil {
 		return nil, err
 	}
 
 	return &domain.QuizModel{}, nil
+}
+
+func (repo *QuizRepositoryImpl) InsertQuiz() error {
+	database := repo.db
+	_, err := database.Query("INSERT * FROM quiz_table")
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
