@@ -5,7 +5,7 @@ import (
 )
 
 type QuizRepository interface {
-	GetQuiz(quizType string) (*QuizModel, error)
+	GetQuiz(quiz QuizType) (*QuizModel, error)
 	UpdateQuiz() (*QuizModel, error)
 	InsertQuiz() error
 }

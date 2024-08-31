@@ -14,7 +14,7 @@ type QuizModel struct {
 type QuizType int
 
 const (
-	NONE            QuizType = 0
+	ALL             QuizType = 0
 	CERPEN          QuizType = 1
 	KALIMAT_EFEKTIF QuizType = 2
 )
@@ -22,7 +22,7 @@ const (
 func ParseToEnum(rawValue string) QuizType {
 	quizType, err := strconv.Atoi(rawValue)
 	if err != nil {
-		return NONE
+		return ALL
 	}
 	switch quizType {
 	case int(CERPEN):
@@ -30,6 +30,6 @@ func ParseToEnum(rawValue string) QuizType {
 	case int(KALIMAT_EFEKTIF):
 		return KALIMAT_EFEKTIF
 	default:
-		return NONE
+		return ALL
 	}
 }
