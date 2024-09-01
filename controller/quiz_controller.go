@@ -31,6 +31,21 @@ func (cont *QuizControllerImpl) GetQuiz(context *gin.Context) {
 	context.JSON(http.StatusOK, quizes)
 }
 
+func (cont *QuizControllerImpl) GetDetailByUserId(context *gin.Context) {
+	requestParam := context.Params.ByName("userId")
+	if requestParam == "" {
+		context.JSON(http.StatusBadRequest, domain.ErrorResponse{Message: "User Id is required"})
+	}
+
+	quiz, quizError := cont.repository.GetDetailByUserId(requestParam)
+	if quizError != nil {
+		context.JSON(http.StatusNotFound, domain.ErrorResponse{Message: quizError.Error()})
+		return
+	}
+
+	context.JSON(http.StatusOK, quiz)
+}
+
 func (cont *QuizControllerImpl) UpdateQuiz(context *gin.Context) {
 
 }

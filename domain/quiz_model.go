@@ -4,6 +4,7 @@ import "strconv"
 
 type QuizModel struct {
 	Id      string   `json:"id"`
+	TId     string   `json:"teacherId"`
 	Soal    string   `json:"soal"`
 	Jawaban []string `json:"jawaban"`
 	Benar   string   `json:"jawabanBenar"`

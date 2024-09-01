@@ -37,7 +37,7 @@ func (repo *UserRepositoryImpl) Register(request domain.RegisterRequest) (*domai
 
 	db := repo.mysql
 	rows, err := db.Query(
-		"INSERT INTO user_data (email, username, password) VALUES (?, ?, ?)",
+		"INSERT INTO user_data (Email, Username, Password) VALUES (?, ?, ?)",
 		request.Email, request.Username, request.Password,
 	)
 
@@ -72,7 +72,7 @@ func (repo *UserRepositoryImpl) Login(request domain.LoginRequest) (*domain.Auth
 	}
 
 	db := repo.mysql
-	query, err := db.Query("SELECT * FROM user_data WHERE email = ? AND password = ?", request.Username, request.Password)
+	query, err := db.Query("SELECT * FROM user_data WHERE Email = ? AND Password = ?", request.Username, request.Password)
 
 	if err != nil {
 		return nil, err
