@@ -51,7 +51,20 @@ func (repo *QuizRepositoryImpl) InsertQuiz() error {
 	return nil
 }
 
-func (repo *QuizRepositoryImpl) GetDetailByUserId(teacherId string) (*domain.QuizModel, error) {
+func (repo *QuizRepositoryImpl) GetQuizDetail(quizId string) (*domain.QuizModel, error) {
+	database := repo.db
+	rows, err := database.Query("SELECT * FROM quiz_table WHERE QuizId IS ?", quizId)
+
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	return &domain.QuizModel{}, err
+}
+
+func (repo *QuizRepositoryImpl) GetQuizesByUserId(teacherId string) (*domain.QuizModel, error) {
 	database := repo.db
 	rows, err := database.Query("SELECT * FROM quiz_table WHERE TeacherId IS ?", teacherId)
 
