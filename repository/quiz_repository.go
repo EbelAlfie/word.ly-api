@@ -40,9 +40,24 @@ func (repo *QuizRepositoryImpl) UpdateQuiz() (*domain.QuizModel, error) {
 	return &domain.QuizModel{}, nil
 }
 
-func (repo *QuizRepositoryImpl) InsertQuiz() error {
+func (repo *QuizRepositoryImpl) InsertQuiz(request domain.QuizRequest) error {
 	database := repo.db
-	_, err := database.Query("INSERT * FROM quiz_table")
+	rows, err := database.Query(
+		"INSERT INTO choice_table (First, Second, Thrid, Fourth) VALUES (?, ?, ?, ?)",
+		request.Jawaban[0], request.Jawaban[1], request.Jawaban[2], request.Jawaban[3],
+	)
+
+	ch := make(chan domain.ChoiceModel)
+	for rows.Next() {
+		var quizData domain.ChoiceModel
+
+		if err := rows.Scan(&quizData.ChoiceId); err != nil {
+			// do something with error
+		} else {
+			println(quizData.ChoiceId)
+			ch <- quizData
+		}
+	}
 
 	if err != nil {
 		return err

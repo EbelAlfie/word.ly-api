@@ -13,5 +13,5 @@ func QuizRoute(group *gin.RouterGroup) {
 
 	group.GET("/quizes", quizController.GetQuiz)
 	group.POST("/insertQuiz", quizController.InsertQuiz)
-	group.GET("/quiz-detail", quizController.GetDetailByUserId)
+	group.GET("/quiz-detail", quizController.GetQuizDetail)
 }

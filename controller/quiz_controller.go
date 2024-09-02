@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -66,5 +67,39 @@ func (cont *QuizControllerImpl) UpdateQuiz(context *gin.Context) {
 }
 
 func (cont *QuizControllerImpl) InsertQuiz(context *gin.Context) {
+	var requestBody domain.QuizRequest
+	contentErr := context.ShouldBind(&requestBody)
+	if contentErr != nil {
+		context.JSON(http.StatusBadRequest, domain.ErrorResponse{Message: "Body must not be empty"})
+		return
+	}
 
+	reqErr := validateQuizRequest(*&requestBody)
+
+	if reqErr != nil {
+		context.JSON(http.StatusBadRequest, domain.ErrorResponse{Message: reqErr.Error()})
+	}
+
+	cont.repository.InsertQuiz(requestBody)
+
+	context.JSON(http.StatusOK, domain.SuccessResponse{Message: "Success"})
+}
+
+func validateQuizRequest(request domain.QuizRequest) error {
+	if request.Soal == "" {
+		return fmt.Errorf("question must not be empty")
+	}
+
+	if request.Benar == "" {
+		return fmt.Errorf("answer must not be empty")
+	}
+
+	if len(request.Jawaban) == 0 {
+		return fmt.Errorf("choices must not be empty")
+	}
+
+	if request.Tips == "" {
+		return fmt.Errorf("tips must not be empty")
+	}
+	return nil
 }

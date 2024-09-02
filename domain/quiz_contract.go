@@ -9,7 +9,7 @@ type QuizRepository interface {
 	GetQuizesByUserId(teacherId string) (*QuizModel, error)
 	GetQuizDetail(teacherId string) (*QuizModel, error)
 	UpdateQuiz() (*QuizModel, error)
-	InsertQuiz() error
+	InsertQuiz(QuizRequest) error
 }
 
 type QuizController interface {

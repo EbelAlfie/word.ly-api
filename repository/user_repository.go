@@ -82,7 +82,6 @@ func (repo *UserRepositoryImpl) Login(request domain.LoginRequest) (*domain.Auth
 	query.Scan(&userData)
 
 	defer query.Close()
-
 	accessToken, authErr := middleware.CreateAccessToken(&userData, secret, 2)
 
 	if authErr != nil {
