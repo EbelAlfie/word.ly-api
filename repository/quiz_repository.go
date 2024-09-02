@@ -2,6 +2,7 @@ package repository
 
 import (
 	"database/sql"
+	"fmt"
 
 	domain "wordly/api/domain"
 )
@@ -40,27 +41,45 @@ func (repo *QuizRepositoryImpl) UpdateQuiz() (*domain.QuizModel, error) {
 	return &domain.QuizModel{}, nil
 }
 
-func (repo *QuizRepositoryImpl) InsertQuiz(request domain.QuizRequest) error {
+func (repo *QuizRepositoryImpl) InsertQuiz(teacherId string, request domain.QuizRequest) error {
 	database := repo.db
-	rows, err := database.Query(
-		"INSERT INTO choice_table (First, Second, Thrid, Fourth) VALUES (?, ?, ?, ?)",
-		request.Jawaban[0], request.Jawaban[1], request.Jawaban[2], request.Jawaban[3],
-	)
+	transaction, transactionError := database.Begin()
 
-	ch := make(chan domain.ChoiceModel)
-	for rows.Next() {
-		var quizData domain.ChoiceModel
-
-		if err := rows.Scan(&quizData.ChoiceId); err != nil {
-			// do something with error
-		} else {
-			println(quizData.ChoiceId)
-			ch <- quizData
-		}
+	if transactionError != nil {
+		return transactionError
 	}
 
-	if err != nil {
-		return err
+	rows, choiceErr := transaction.Query(
+		"INSERT INTO choice_table (First, Second, Third, Fourth) VALUES (?, ?, ?, ?)",
+		request.Choices[0], request.Choices[1], request.Choices[2], request.Choices[3],
+	)
+
+	if choiceErr != nil {
+		_ = transaction.Rollback()
+		return choiceErr
+	}
+
+	var choiceData domain.ChoiceModel
+	for rows.Next() {
+		if rowErr := rows.Scan(&choiceData.ChoiceId); rowErr != nil {
+			_ = transaction.Rollback()
+			return rowErr
+		}
+		fmt.Printf("%s wefwefwf", choiceData.ChoiceId)
+	}
+
+	_, quizErr := transaction.Query(
+		"INSERT INTO quiz_table (TeacherId, ChoiceId, Soal, CorrectAnswer, Hint, Score, Type) VALUES (?, ?, ?, ?, ?, ?, ?)",
+		teacherId, choiceData.ChoiceId, request.Question, request.CorrectAnswer, request.Hint, request.Score, request.Type,
+	)
+
+	if quizErr != nil {
+		_ = transaction.Rollback()
+		return quizErr
+	}
+
+	if trxErr := transaction.Commit(); trxErr != nil {
+		return trxErr
 	}
 
 	return nil
@@ -68,7 +87,10 @@ func (repo *QuizRepositoryImpl) InsertQuiz(request domain.QuizRequest) error {
 
 func (repo *QuizRepositoryImpl) GetQuizDetail(quizId string) (*domain.QuizModel, error) {
 	database := repo.db
-	rows, err := database.Query("SELECT * FROM quiz_table WHERE QuizId IS ?", quizId)
+	rows, err := database.Query(
+		"SELECT * FROM quiz_table WHERE QuizId = ? ",
+		quizId,
+	)
 
 	if err != nil {
 		return nil, err

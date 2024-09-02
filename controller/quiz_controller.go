@@ -48,12 +48,13 @@ func (cont *QuizControllerImpl) GetQuizesByUserId(context *gin.Context) {
 }
 
 func (cont *QuizControllerImpl) GetQuizDetail(context *gin.Context) {
-	requestParam := context.Params.ByName("quizId")
+	requestParam := context.Request.URL.Query().Get("quizId")
 	if requestParam == "" {
 		context.JSON(http.StatusBadRequest, domain.ErrorResponse{Message: "Quiz Id is required"})
+		return
 	}
 
-	quiz, quizError := cont.repository.GetQuizesByUserId(requestParam)
+	quiz, quizError := cont.repository.GetQuizDetail(requestParam)
 	if quizError != nil {
 		context.JSON(http.StatusNotFound, domain.ErrorResponse{Message: quizError.Error()})
 		return
@@ -69,36 +70,45 @@ func (cont *QuizControllerImpl) UpdateQuiz(context *gin.Context) {
 func (cont *QuizControllerImpl) InsertQuiz(context *gin.Context) {
 	var requestBody domain.QuizRequest
 	contentErr := context.ShouldBind(&requestBody)
+
 	if contentErr != nil {
 		context.JSON(http.StatusBadRequest, domain.ErrorResponse{Message: "Body must not be empty"})
 		return
 	}
 
-	reqErr := validateQuizRequest(*&requestBody)
+	reqErr := validateQuizRequest(requestBody)
 
 	if reqErr != nil {
 		context.JSON(http.StatusBadRequest, domain.ErrorResponse{Message: reqErr.Error()})
+		return
 	}
 
-	cont.repository.InsertQuiz(requestBody)
+	teacherID := context.GetString("x-user-id")
+
+	err := cont.repository.InsertQuiz(teacherID, requestBody)
+
+	if err != nil {
+		context.JSON(http.StatusBadRequest, domain.ErrorResponse{Message: err.Error()})
+		return
+	}
 
 	context.JSON(http.StatusOK, domain.SuccessResponse{Message: "Success"})
 }
 
 func validateQuizRequest(request domain.QuizRequest) error {
-	if request.Soal == "" {
+	if request.Question == "" {
 		return fmt.Errorf("question must not be empty")
 	}
 
-	if request.Benar == "" {
+	if request.CorrectAnswer == "" {
 		return fmt.Errorf("answer must not be empty")
 	}
 
-	if len(request.Jawaban) == 0 {
+	if len(request.Choices) == 0 {
 		return fmt.Errorf("choices must not be empty")
 	}
 
-	if request.Tips == "" {
+	if request.Hint == "" {
 		return fmt.Errorf("tips must not be empty")
 	}
 	return nil

@@ -72,16 +72,18 @@ func (repo *UserRepositoryImpl) Login(request domain.LoginRequest) (*domain.Auth
 	}
 
 	db := repo.mysql
-	query, err := db.Query("SELECT * FROM user_data WHERE Email = ? AND Password = ?", request.Username, request.Password)
-
-	if err != nil {
-		return nil, err
-	}
+	query := db.QueryRow(
+		"SELECT * FROM user_data WHERE Username = ? AND Password = ?",
+		request.Username, request.Password,
+	)
 
 	var userData domain.UserData
-	query.Scan(&userData)
+	rowErr := query.Scan(&userData.Uid, &userData.Email, &userData.UserName, &userData.Password)
 
-	defer query.Close()
+	if rowErr != nil {
+		return nil, rowErr
+	}
+
 	accessToken, authErr := middleware.CreateAccessToken(&userData, secret, 2)
 
 	if authErr != nil {

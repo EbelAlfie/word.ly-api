@@ -25,6 +25,7 @@ func JwtAuthMiddleware(secret string) gin.HandlerFunc {
 					ctx.Set("x-user-id", userId)
 					ctx.Next()
 				}
+				return
 			}
 		}
 		ctx.JSON(http.StatusUnauthorized, domain.ErrorResponse{Message: "Unauthorized"})

@@ -3,21 +3,22 @@ package domain
 import "strconv"
 
 type QuizRequest struct {
-	Soal    string   `json:"soal"`
-	Jawaban []string `json:"jawaban"`
-	Benar   string   `json:"jawabanBenar"`
-	Score   int      `json:"score"`
-	Tips    string   `json:"tips"`
+	Question      string   `json:"question"`
+	Choices       []string `json:"choices"`
+	CorrectAnswer string   `json:"correctAnswer"`
+	Score         int      `json:"score"`
+	Hint          string   `json:"hint"`
+	Type          string   `json:"type"`
 }
 
 type QuizModel struct {
-	Id      string   `json:"id"`
-	TId     string   `json:"teacherId"`
-	Soal    string   `json:"soal"`
-	Jawaban []string `json:"jawaban"`
-	Benar   string   `json:"jawabanBenar"`
-	Score   int      `json:"score"`
-	Tips    string   `json:"tips"`
+	Id            string   `json:"id"`
+	TId           string   `json:"teacherId"`
+	Question      string   `json:"question"`
+	Choices       []string `json:"choices"`
+	CorrectAnswer string   `json:"correctAnswer"`
+	Score         int      `json:"score"`
+	Hint          string   `json:"hint"`
 }
 
 type QuizType int

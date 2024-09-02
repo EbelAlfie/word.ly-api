@@ -12,6 +12,6 @@ func QuizRoute(group *gin.RouterGroup) {
 	quizController := controller.CreateQuizController(quizRepository)
 
 	group.GET("/quizes", quizController.GetQuiz)
-	group.POST("/insertQuiz", quizController.InsertQuiz)
+	group.POST("/add-quiz", quizController.InsertQuiz)
 	group.GET("/quiz-detail", quizController.GetQuizDetail)
 }
