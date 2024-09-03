@@ -5,10 +5,10 @@ import (
 )
 
 type QuizRepository interface {
-	GetQuiz(quiz QuizType) (*QuizModel, error)
-	GetQuizesByUserId(teacherId string) (*QuizModel, error)
+	GetQuiz(quiz QuizType) ([]QuizModel, error)
+	GetQuizesByUserId(teacherId string) ([]QuizModel, error)
 	GetQuizDetail(teacherId string) (*QuizModel, error)
-	UpdateQuiz() (*QuizModel, error)
+	UpdateQuiz(request QuizRequest) (*QuizModel, error)
 	InsertQuiz(teacherId string, request QuizRequest) error
 }
 

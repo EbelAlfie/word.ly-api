@@ -2,7 +2,6 @@ package repository
 
 import (
 	"database/sql"
-	"fmt"
 
 	domain "wordly/api/domain"
 )
@@ -19,23 +18,51 @@ func CreateQuizRepository() domain.QuizRepository {
 	}
 }
 
-func (repo *QuizRepositoryImpl) GetQuiz(quizType domain.QuizType) (*domain.QuizModel, error) {
+func (repo *QuizRepositoryImpl) GetQuiz(quizType domain.QuizType) ([]domain.QuizModel, error) {
 	database := repo.db
-	_, err := database.Query("SELECT * FROM quiz_table WHERE type is quizType")
 
-	if err != nil {
-		return nil, err
+	rows, quizError := database.Query(
+		`SELECT QuizId, Soal, CorrectAnswer, Hint, Score, Type, First, Second, Third, Fourth FROM quiz_table 
+		INNER JOIN choice_table ON quiz_table.ChoiceId = choice_table.ChoiceId WHERE Type = ?
+		ORDER BY RAND() LIMIT 6`,
+		quizType,
+	)
+
+	if quizError != nil {
+		return nil, quizError
 	}
 
-	return &domain.QuizModel{}, nil
+	var quizes []domain.QuizModel
+	for rows.Next() {
+		var quiz domain.QuizModel
+		var choices domain.ChoiceModel
+		if scanErr := rows.Scan(&quiz.Id, &quiz.Question, &quiz.CorrectAnswer, &quiz.Hint, &quiz.Score, &quiz.Type, &choices.ChoiceA, &choices.ChoiceB, &choices.ChoiceC, &choices.ChoiceD); scanErr != nil {
+			return nil, scanErr
+		}
+
+		quiz.Choices = []string{choices.ChoiceA, choices.ChoiceB, choices.ChoiceC, choices.ChoiceD}
+		quizes = append(quizes, quiz)
+	}
+
+	return quizes, nil
 }
 
-func (repo *QuizRepositoryImpl) UpdateQuiz() (*domain.QuizModel, error) {
+func (repo *QuizRepositoryImpl) UpdateQuiz(request domain.QuizRequest) (*domain.QuizModel, error) {
 	database := repo.db
-	_, err := database.Query("UPDATE * FROM quiz_table")
+	transaction, trxErr := database.Begin()
 
-	if err != nil {
-		return nil, err
+	if trxErr != nil {
+		return nil, trxErr
+	}
+
+	row := transaction.QueryRow("UPDATE * FROM quiz_table")
+
+	var quiz domain.QuizModel
+
+	var choiceId string
+	if scanErr := row.Scan(&quiz.Id, &quiz.TId, &choiceId, &quiz.Question, &quiz.CorrectAnswer, &quiz.Hint, &quiz.Score, &quiz.Type); scanErr != nil {
+		transaction.Rollback()
+		return nil, scanErr
 	}
 
 	return &domain.QuizModel{}, nil
@@ -49,7 +76,7 @@ func (repo *QuizRepositoryImpl) InsertQuiz(teacherId string, request domain.Quiz
 		return transactionError
 	}
 
-	rows, choiceErr := transaction.Query(
+	result, choiceErr := transaction.Exec(
 		"INSERT INTO choice_table (First, Second, Third, Fourth) VALUES (?, ?, ?, ?)",
 		request.Choices[0], request.Choices[1], request.Choices[2], request.Choices[3],
 	)
@@ -59,18 +86,16 @@ func (repo *QuizRepositoryImpl) InsertQuiz(teacherId string, request domain.Quiz
 		return choiceErr
 	}
 
-	var choiceData domain.ChoiceModel
-	for rows.Next() {
-		if rowErr := rows.Scan(&choiceData.ChoiceId); rowErr != nil {
-			_ = transaction.Rollback()
-			return rowErr
-		}
-		fmt.Printf("%s wefwefwf", choiceData.ChoiceId)
+	id, idErr := result.LastInsertId()
+
+	if idErr != nil {
+		_ = transaction.Rollback()
+		return idErr
 	}
 
-	_, quizErr := transaction.Query(
+	_, quizErr := transaction.Exec(
 		"INSERT INTO quiz_table (TeacherId, ChoiceId, Soal, CorrectAnswer, Hint, Score, Type) VALUES (?, ?, ?, ?, ?, ?, ?)",
-		teacherId, choiceData.ChoiceId, request.Question, request.CorrectAnswer, request.Hint, request.Score, request.Type,
+		teacherId, id, request.Question, request.CorrectAnswer, request.Hint, request.Score, request.Type,
 	)
 
 	if quizErr != nil {
@@ -87,29 +112,70 @@ func (repo *QuizRepositoryImpl) InsertQuiz(teacherId string, request domain.Quiz
 
 func (repo *QuizRepositoryImpl) GetQuizDetail(quizId string) (*domain.QuizModel, error) {
 	database := repo.db
-	rows, err := database.Query(
+	transaction, trxErr := database.Begin()
+
+	if trxErr != nil {
+		return nil, trxErr
+	}
+
+	row := transaction.QueryRow(
 		"SELECT * FROM quiz_table WHERE QuizId = ? ",
 		quizId,
 	)
 
-	if err != nil {
-		return nil, err
+	var quiz domain.QuizModel
+
+	var choiceId string
+	if scanErr := row.Scan(&quiz.Id, &quiz.TId, &choiceId, &quiz.Question, &quiz.CorrectAnswer, &quiz.Hint, &quiz.Score, &quiz.Type); scanErr != nil {
+		transaction.Rollback()
+		return nil, scanErr
 	}
 
-	defer rows.Close()
+	choice := transaction.QueryRow(
+		"SELECT * FROM choice_table WHERE ChoiceId = ?",
+		choiceId,
+	)
 
-	return &domain.QuizModel{}, err
+	var choices domain.ChoiceModel
+	if scanErr := choice.Scan(&choices.ChoiceId, &choices.ChoiceA, &choices.ChoiceB, &choices.ChoiceC, &choices.ChoiceD); scanErr != nil {
+		transaction.Rollback()
+		return nil, scanErr
+	}
+
+	return &domain.QuizModel{
+		Id:            quiz.Id,
+		TId:           quiz.TId,
+		Question:      quiz.Question,
+		Choices:       []string{choices.ChoiceA, choices.ChoiceB, choices.ChoiceC, choices.ChoiceD},
+		CorrectAnswer: quiz.CorrectAnswer,
+		Hint:          quiz.Hint,
+		Score:         quiz.Score,
+		Type:          quiz.Type,
+	}, nil
 }
 
-func (repo *QuizRepositoryImpl) GetQuizesByUserId(teacherId string) (*domain.QuizModel, error) {
+func (repo *QuizRepositoryImpl) GetQuizesByUserId(teacherId string) ([]domain.QuizModel, error) {
 	database := repo.db
-	rows, err := database.Query("SELECT * FROM quiz_table WHERE TeacherId IS ?", teacherId)
+	rows, err := database.Query("SELECT * FROM quiz_table WHERE TeacherId = ?", teacherId)
 
 	if err != nil {
 		return nil, err
 	}
 
+	var quizList []domain.QuizModel
+
+	for rows.Next() {
+		var quiz domain.QuizModel
+		var trash string
+		quizErr := rows.Scan(&quiz.Id, &quiz.TId, &trash, &quiz.Question, &quiz.CorrectAnswer, &quiz.Hint, &quiz.Score, &quiz.Type)
+		if quizErr != nil {
+			return nil, quizErr
+		} else {
+			quizList = append(quizList, quiz)
+		}
+	}
+
 	defer rows.Close()
 
-	return &domain.QuizModel{}, err
+	return quizList, err
 }

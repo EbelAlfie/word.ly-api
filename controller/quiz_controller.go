@@ -20,7 +20,7 @@ func CreateQuizController(repo domain.QuizRepository) domain.QuizController {
 }
 
 func (cont *QuizControllerImpl) GetQuiz(context *gin.Context) {
-	requestParam := context.Params.ByName("quizType")
+	requestParam := context.Request.URL.Query().Get("quizType")
 	quizType := domain.ParseToEnum(requestParam)
 
 	quizes, quizError := cont.repository.GetQuiz(quizType)
@@ -33,14 +33,11 @@ func (cont *QuizControllerImpl) GetQuiz(context *gin.Context) {
 }
 
 func (cont *QuizControllerImpl) GetQuizesByUserId(context *gin.Context) {
-	requestParam := context.Params.ByName("userId")
-	if requestParam == "" {
-		context.JSON(http.StatusBadRequest, domain.ErrorResponse{Message: "User Id is required"})
-	}
+	teacherId := context.GetString("x-user-id")
 
-	quiz, quizError := cont.repository.GetQuizesByUserId(requestParam)
+	quiz, quizError := cont.repository.GetQuizesByUserId(teacherId)
 	if quizError != nil {
-		context.JSON(http.StatusNotFound, domain.ErrorResponse{Message: quizError.Error()})
+		context.JSON(http.StatusBadRequest, domain.ErrorResponse{Message: quizError.Error()})
 		return
 	}
 
@@ -64,7 +61,29 @@ func (cont *QuizControllerImpl) GetQuizDetail(context *gin.Context) {
 }
 
 func (cont *QuizControllerImpl) UpdateQuiz(context *gin.Context) {
+	var requestBody domain.QuizRequest
+	contentErr := context.ShouldBind(&requestBody)
 
+	if contentErr != nil {
+		context.JSON(http.StatusBadRequest, domain.ErrorResponse{Message: "Body must not be empty"})
+		return
+	}
+
+	reqErr := validateQuizRequest(requestBody)
+
+	if reqErr != nil {
+		context.JSON(http.StatusBadRequest, domain.ErrorResponse{Message: reqErr.Error()})
+		return
+	}
+
+	_, err := cont.repository.UpdateQuiz(requestBody)
+
+	if err != nil {
+		context.JSON(http.StatusBadRequest, domain.ErrorResponse{Message: err.Error()})
+		return
+	}
+
+	context.JSON(http.StatusOK, domain.SuccessResponse{Message: "Success"})
 }
 
 func (cont *QuizControllerImpl) InsertQuiz(context *gin.Context) {

@@ -8,7 +8,7 @@ type QuizRequest struct {
 	CorrectAnswer string   `json:"correctAnswer"`
 	Score         int      `json:"score"`
 	Hint          string   `json:"hint"`
-	Type          string   `json:"type"`
+	Type          int      `json:"type"`
 }
 
 type QuizModel struct {
@@ -19,6 +19,7 @@ type QuizModel struct {
 	CorrectAnswer string   `json:"correctAnswer"`
 	Score         int      `json:"score"`
 	Hint          string   `json:"hint"`
+	Type          int      `json:"type"`
 }
 
 type QuizType int

@@ -1,9 +1,9 @@
 package domain
 
 type ChoiceModel struct {
-	ChoiceId int `json:"choiceId"`
-	ChoiceA  int `json:"choiceA"`
-	ChoiceB  int `json:"choiceB"`
-	ChoiceC  int `json:"choiceC"`
-	ChoiceD  int `json:"choiceD"`
+	ChoiceId string `json:"choiceId"`
+	ChoiceA  string `json:"choiceA"`
+	ChoiceB  string `json:"choiceB"`
+	ChoiceC  string `json:"choiceC"`
+	ChoiceD  string `json:"choiceD"`
 }

@@ -2,23 +2,14 @@ package main
 
 import (
 	"log"
-	"os"
 
 	"github.com/gin-gonic/gin"
-	"github.com/joho/godotenv"
 
 	"wordly/api/middleware"
 	route "wordly/api/route"
 )
 
 func main() {
-	errorEnv := godotenv.Load()
-	if errorEnv != nil {
-		log.Fatal("Error loading .env file")
-	}
-
-	secret := os.Getenv("SECRET")
-
 	server := gin.Default()
 
 	gin.SetMode(gin.DebugMode)
@@ -27,14 +18,8 @@ func main() {
 
 	wordly := server.Group("/wordly")
 	{
-		public := wordly.Group("")
-
-		route.UserRoute(public.Group("/user"))
-
-		private := wordly.Group("")
-		private.Use(middleware.JwtAuthMiddleware(secret))
-
-		route.QuizRoute(private.Group("/quiz"))
+		route.UserRoute(wordly.Group("/user"))
+		route.QuizRoute(wordly.Group("/quiz"))
 	}
 
 	if err := server.Run("localhost:3030"); err != nil {
