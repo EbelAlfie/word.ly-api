@@ -31,7 +31,7 @@ func QuizRoute(group *gin.RouterGroup) {
 	private.Use(middleware.JwtAuthMiddleware(secret))
 
 	private.POST("/add-quiz", quizController.InsertQuiz)
-	public.GET("/quiz-detail", quizController.GetQuizDetail)
+	private.GET("/quiz-detail", quizController.GetQuizDetail)
 	private.GET("/my-quiz", quizController.GetQuizesByUserId)
 	private.POST("/update", quizController.UpdateQuiz)
 }
