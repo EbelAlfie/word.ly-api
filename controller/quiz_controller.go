@@ -76,7 +76,14 @@ func (cont *QuizControllerImpl) UpdateQuiz(context *gin.Context) {
 		return
 	}
 
-	_, err := cont.repository.UpdateQuiz(requestBody)
+	reqErr = validateForUpdate(requestBody)
+
+	if reqErr != nil {
+		context.JSON(http.StatusBadRequest, domain.ErrorResponse{Message: reqErr.Error()})
+		return
+	}
+
+	err := cont.repository.UpdateQuiz(requestBody)
 
 	if err != nil {
 		context.JSON(http.StatusBadRequest, domain.ErrorResponse{Message: err.Error()})
@@ -129,6 +136,16 @@ func validateQuizRequest(request domain.QuizRequest) error {
 
 	if request.Hint == "" {
 		return fmt.Errorf("tips must not be empty")
+	}
+	return nil
+}
+
+func validateForUpdate(request domain.QuizRequest) error {
+	if request.QuizId == "" {
+		return fmt.Errorf("QuizId is empty")
+	}
+	if request.ChoiceId == "" {
+		return fmt.Errorf("ChoiceId is empty")
 	}
 	return nil
 }

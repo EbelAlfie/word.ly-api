@@ -47,30 +47,40 @@ func (repo *QuizRepositoryImpl) GetQuiz(quizType domain.QuizType) ([]domain.Quiz
 	return quizes, nil
 }
 
-func (repo *QuizRepositoryImpl) UpdateQuiz(request domain.QuizRequest) (*domain.QuizModel, error) {
+func (repo *QuizRepositoryImpl) UpdateQuiz(request domain.QuizRequest) error {
 	database := repo.db
 	transaction, trxErr := database.Begin()
 
 	if trxErr != nil {
-		return nil, trxErr
+		return trxErr
 	}
 
-	row := transaction.QueryRow(
+	if _, quizUpdateErr := transaction.Exec(
 		`UPDATE quiz_table 
 		SET Soal = ?, CorrectAnswer = ?, Hint = ? 
 		WHERE QuizId = ?`,
 		request.Question, request.CorrectAnswer, request.Hint, request.QuizId,
-	)
-
-	var quiz domain.QuizModel
-
-	var choiceId string
-	if scanErr := row.Scan(&quiz.Id, &quiz.TId, &choiceId, &quiz.Question, &quiz.CorrectAnswer, &quiz.Hint, &quiz.Score, &quiz.Type); scanErr != nil {
+	); quizUpdateErr != nil {
 		transaction.Rollback()
-		return nil, scanErr
+		return quizUpdateErr
 	}
 
-	return &domain.QuizModel{}, nil
+	if _, choiceUpdateErr := transaction.Exec(
+		`UPDATE choice_table
+		SET First = ?, Second = ?, Third = ?, Fourth = ?
+		WHERE ChoiceId = ?`,
+		request.Choices[0], request.Choices[1], request.Choices[2], request.Choices[3], request.ChoiceId,
+	); choiceUpdateErr != nil {
+		transaction.Rollback()
+		return choiceUpdateErr
+	}
+
+	if trxErr := transaction.Commit(); trxErr != nil {
+		transaction.Rollback()
+		return trxErr
+	}
+
+	return nil
 }
 
 func (repo *QuizRepositoryImpl) InsertQuiz(teacherId string, request domain.QuizRequest) error {
@@ -98,12 +108,10 @@ func (repo *QuizRepositoryImpl) InsertQuiz(teacherId string, request domain.Quiz
 		return idErr
 	}
 
-	_, quizErr := transaction.Exec(
+	if _, quizErr := transaction.Exec(
 		"INSERT INTO quiz_table (TeacherId, ChoiceId, Soal, CorrectAnswer, Hint, Score, Type) VALUES (?, ?, ?, ?, ?, ?, ?)",
 		teacherId, id, request.Question, request.CorrectAnswer, request.Hint, request.Score, request.Type,
-	)
-
-	if quizErr != nil {
+	); quizErr != nil {
 		_ = transaction.Rollback()
 		return quizErr
 	}
@@ -151,6 +159,7 @@ func (repo *QuizRepositoryImpl) GetQuizDetail(quizId string) (*domain.QuizModel,
 		Id:            quiz.Id,
 		TId:           quiz.TId,
 		Question:      quiz.Question,
+		ChoiceId:      choices.ChoiceId,
 		Choices:       []string{choices.ChoiceA, choices.ChoiceB, choices.ChoiceC, choices.ChoiceD},
 		CorrectAnswer: quiz.CorrectAnswer,
 		Hint:          quiz.Hint,

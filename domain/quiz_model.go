@@ -5,6 +5,7 @@ import "strconv"
 type QuizRequest struct {
 	QuizId        string   `json:"quizId"`
 	Question      string   `json:"question"`
+	ChoiceId      string   `json:"choiceId"`
 	Choices       []string `json:"choices"`
 	CorrectAnswer string   `json:"correctAnswer"`
 	Score         int      `json:"score"`
@@ -16,6 +17,7 @@ type QuizModel struct {
 	Id            string   `json:"id"`
 	TId           string   `json:"teacherId"`
 	Question      string   `json:"question"`
+	ChoiceId      string   `json:"choiceId"`
 	Choices       []string `json:"choices"`
 	CorrectAnswer string   `json:"correctAnswer"`
 	Score         int      `json:"score"`

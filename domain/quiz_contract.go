@@ -8,7 +8,7 @@ type QuizRepository interface {
 	GetQuiz(quiz QuizType) ([]QuizModel, error)
 	GetQuizesByUserId(teacherId string) ([]QuizModel, error)
 	GetQuizDetail(teacherId string) (*QuizModel, error)
-	UpdateQuiz(request QuizRequest) (*QuizModel, error)
+	UpdateQuiz(request QuizRequest) error
 	InsertQuiz(teacherId string, request QuizRequest) error
 }
 
