@@ -3,6 +3,7 @@ package domain
 import "strconv"
 
 type QuizRequest struct {
+	QuizId        string   `json:"quizId"`
 	Question      string   `json:"question"`
 	Choices       []string `json:"choices"`
 	CorrectAnswer string   `json:"correctAnswer"`

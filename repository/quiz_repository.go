@@ -55,7 +55,12 @@ func (repo *QuizRepositoryImpl) UpdateQuiz(request domain.QuizRequest) (*domain.
 		return nil, trxErr
 	}
 
-	row := transaction.QueryRow("UPDATE * FROM quiz_table")
+	row := transaction.QueryRow(
+		`UPDATE quiz_table 
+		SET Soal = ?, CorrectAnswer = ?, Hint = ? 
+		WHERE QuizId = ?`,
+		request.Question, request.CorrectAnswer, request.Hint, request.QuizId,
+	)
 
 	var quiz domain.QuizModel
 
